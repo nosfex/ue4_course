@@ -3,6 +3,7 @@
 #include "FPSAIGuard.h"
 #include "Perception/PawnSensingComponent.h"
 #include "DrawDebugHelpers.h"
+//#include ""
 
 // Sets default values
 AFPSAIGuard::AFPSAIGuard()
@@ -12,6 +13,7 @@ AFPSAIGuard::AFPSAIGuard()
 	PawnSensingComp = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComp"));
 
 	PawnSensingComp->OnSeePawn.AddDynamic(this, &AFPSAIGuard::OnPawnSeen);
+	PawnSensingComp->OnHearNoise.AddDynamic(this, &AFPSAIGuard::OnNoiseHeard);
 }
 
 // Called when the game starts or when spawned
@@ -36,4 +38,15 @@ void AFPSAIGuard::OnPawnSeen(APawn* SeenPawn)
 	}
 	DrawDebugSphere(GetWorld(), SeenPawn->GetActorLocation(), 32.0f, 12, FColor::Yellow, false, 10.0f);
 	//UE_LOG(LogTemp, Warning, )
+}
+
+void AFPSAIGuard::OnNoiseHeard(APawn* NoiseInstigator, const FVector& Location, float Volume)
+{
+
+	//	DrawDebugSphere();
+	DrawDebugSphere(GetWorld(), Location, 32.0f, 12, FColor::Yellow, false, 10.0f);
+	FVector direction = (Location - GetActorLocation());
+	direction.Normalize();
+	FRotator rot = FRotationMatrix::MakeFromX(direction).Rotator();
+	SetActorRotation(rot);
 }
